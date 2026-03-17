@@ -6,6 +6,7 @@
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <style>
+/* ===== RESET & FONT ===== */
 * {
   margin: 0;
   padding: 0;
@@ -13,6 +14,7 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
+/* ===== BODY ===== */
 body {
   background: linear-gradient(135deg, #0f172a, #020617);
   color: #e2e8f0;
@@ -23,6 +25,7 @@ body {
   padding: 10px;
 }
 
+/* ===== CONTAINER ===== */
 .container {
   width: 95%;
   max-width: 400px;
@@ -36,6 +39,7 @@ body {
   justify-content: center;
 }
 
+/* ===== HEADINGS ===== */
 h1 {
   text-align: center;
   font-size: 24px;
@@ -49,6 +53,7 @@ h1 {
   margin-bottom: 20px;
 }
 
+/* ===== INPUTS ===== */
 .input-group {
   margin-bottom: 16px;
 }
@@ -64,6 +69,7 @@ input {
   font-size: 16px;
 }
 
+/* ===== DEAL SUMMARY ===== */
 .summary {
   margin-top: 18px;
   padding: 16px;
@@ -74,6 +80,7 @@ input {
   text-align: center;
 }
 
+/* ===== BUTTON ===== */
 button {
   margin-top: 20px;
   width: 100%;
@@ -92,6 +99,7 @@ button:hover {
   transform: scale(1.03);
 }
 
+/* ===== FOOTER ===== */
 .footer {
   text-align: center;
   margin-top: 20px;
@@ -99,6 +107,7 @@ button:hover {
   color: #64748b;
 }
 
+/* ===== VERY SMALL SCREENS ===== */
 @media (max-width: 360px) {
   input { padding: 14px; font-size: 15px; }
   button { padding: 16px; font-size: 15px; }
@@ -122,12 +131,13 @@ button:hover {
 
   <div class="summary" id="summary">No deal preview yet</div>
 
-  <button onclick="payNow()">Secure Payment</button>
+  <button id="payButton">Secure Payment</button>
 
   <div class="footer">Funds are held securely until release</div>
 </div>
 
 <script>
+/* ===== LIVE SUMMARY ===== */
 const inputs = document.querySelectorAll("input");
 inputs.forEach(input => input.addEventListener("input", updateSummary));
 
@@ -139,16 +149,21 @@ function updateSummary() {
     `<b>Deal Summary</b><br>Buyer: ${buyer}<br>Seller: ${seller}<br>Amount: ₦${amount}`;
 }
 
+/* ===== PAYSTACK SETUP ===== */
 const PAYSTACK_PUBLIC_KEY = "YOUR_PAYSTACK_PUBLIC_KEY";
+let paystackOpen = false; // prevent multiple popups
 
-function payNow() {
+document.getElementById("payButton").addEventListener("click", function() {
+  if(paystackOpen) return; // prevent multiple popups
   let amount = document.getElementById("amount").value * 100;
   let email = document.getElementById("email").value;
 
-  if (!email || amount <= 0) {
+  if(!email || amount <= 0) {
     alert("Fill all fields correctly");
     return;
   }
+
+  paystackOpen = true; // mark popup as open
 
   let handler = PaystackPop.setup({
     key: PAYSTACK_PUBLIC_KEY,
@@ -163,156 +178,16 @@ function payNow() {
     },
     callback: function(response) {
       alert("Payment successful! Ref: " + response.reference);
+      paystackOpen = false;
     },
     onClose: function() {
       alert("Transaction cancelled");
+      paystackOpen = false;
     }
   });
 
   handler.openIframe();
-}
-</script>
-
-</body>
-</html>  input { padding: 14px; font-size: 15px; }
-  button { padding: 16px; font-size: 15px; }
-  h1 { font-size: 22px; }
-  .subtitle { font-size: 13px; }
-  .summary { font-size: 13px; padding: 14px; }
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-  <h1>Counc3 Escrow</h1>
-  <p class="subtitle">Secure Middleman Transactions</p>
-
-  <div class="input-group"><input type="text" id="buyer" placeholder="Buyer Name"></div>
-  <div class="input-group"><input type="text" id="seller" placeholder="Seller Name"></div>
-  <div class="input-group"><input type="number" id="amount" placeholder="Amount (₦)"></div>
-  <div class="input-group"><input type="email" id="email" placeholder="Buyer Email"></div>
-
-  <div class="summary" id="summary">No deal preview yet</div>
-
-  <button onclick="notifyAndPay()">Secure Payment</button>
-
-  <div class="footer">Funds are held securely until release</div>
-</div>
-
-<script>
-/* ===== LIVE SUMMARY ===== */
-const inputs = document.querySelectorAll("input");
-inputs.forEach(input => input.addEventListener("input", updateSummary));
-
-function updateSummary(){
-  let buyer = document.getElementById("buyer").value || "-";
-  let seller = document.getElementById("seller").value || "-";
-  let amount = document.getElementById("amount").value || "0";
-  document.getElementById("summary").innerHTML = `<b>Deal Summary</b><br>Buyer: ${buyer}<br>Seller: ${seller}<br>Amount: ₦${amount}`;
-}
-
-/* ===== IFTTT GMAIL NOTIFICATION ===== */
-const IFTTT_WEBHOOK_URL = "https://maker.ifttt.com/trigger/escrow_click/with/key/YOUR_IFTTT_KEY";
-
-/* ===== PAYSTACK SETUP ===== */
-const PAYSTACK_PUBLIC_KEY = "YOUR_PAYSTACK_PUBLIC_KEY";
-
-function notifyAndPay(){
-  // 1️⃣ Send Gmail notification via IFTTT
-  fetch(IFTTT_WEBHOOK_URL, { method:"POST" })
-    .then(()=>console.log("Gmail notification sent"))
-    .catch(()=>console.log("Error sending notification"));
-
-  // 2️⃣ Launch Paystack payment
-  let amount = document.getElementById("amount").value * 100;
-  let email = document.getElementById("email").value;
-  if(!email || amount <= 0){ alert("Fill all fields correctly"); return; }
-
-  let handler = PaystackPop.setup({
-    key: PAYSTACK_PUBLIC_KEY,
-    email: email,
-    amount: amount,
-    currency: "NGN",
-    metadata:{
-      custom_fields:[
-        { display_name:"Buyer", value: document.getElementById("buyer").value },
-        { display_name:"Seller", value: document.getElementById("seller").value }
-      ]
-    },
-    callback: function(response){ alert("Payment successful! Ref: "+response.reference); },
-    onClose: function(){ alert("Transaction cancelled"); }
-  });
-
-  handler.openIframe();
-}
-</script>
-
-</body>
-</html>
-<div class="container">
-  <h1>Payment Dashboard</h1>
-  <p class="subtitle">Secure Transactions</p>
-
-  <div class="input-group"><input type="text" id="buyer" placeholder="Buyer Name"></div>
-  <div class="input-group"><input type="text" id="seller" placeholder="Seller Name"></div>
-  <div class="input-group"><input type="number" id="amount" placeholder="Amount (₦)"></div>
-  <div class="input-group"><input type="email" id="email" placeholder="Buyer Email"></div>
-
-  <!-- Deal Summary -->
-  <div class="summary" id="summary">No deal preview yet</div>
-
-  <button onclick="notifyAndPay()">Secure Payment</button>
-
-  <div class="footer">Funds are held securely until release</div>
-</div>
-
-<script>
-const inputs = document.querySelectorAll("input");
-inputs.forEach(input => input.addEventListener("input", updateSummary));
-
-function updateSummary(){
-  let buyer = document.getElementById("buyer").value || "-";
-  let seller = document.getElementById("seller").value || "-";
-  let amount = document.getElementById("amount").value || "0";
-  document.getElementById("summary").innerHTML = `<b>Deal Summary</b><br>Buyer: ${buyer}<br>Seller: ${seller}<br>Amount: ₦${amount}`;
-}
-
-// ===== IFTTT WEBHOOK SETUP =====
-const IFTTT_WEBHOOK_URL = "https://maker.ifttt.com/trigger/escrow_click/with/key/YOUR_IFTTT_KEY";
-
-// ===== PAYSTACK PUBLIC KEY =====
-const PAYSTACK_PUBLIC_KEY = "YOUR_PAYSTACK_PUBLIC_KEY";
-
-function notifyAndPay(){
-  // 1️⃣ Send Gmail notification via IFTTT
-  fetch(IFTTT_WEBHOOK_URL, { method:"POST" })
-    .then(()=>console.log("Gmail notification sent"))
-    .catch(()=>console.log("Error sending notification"));
-
-  // 2️⃣ Launch Paystack payment
-  let amount = document.getElementById("amount").value * 100;
-  let email = document.getElementById("email").value;
-  if(!email || amount <= 0){alert("Fill all fields correctly"); return;}
-
-  let handler = PaystackPop.setup({
-    key: PAYSTACK_PUBLIC_KEY,
-    email: email,
-    amount: amount,
-    currency: "NGN",
-    metadata:{
-      custom_fields:[
-        { display_name:"Buyer", value: document.getElementById("buyer").value },
-        { display_name:"Seller", value: document.getElementById("seller").value }
-      ]
-    },
-    callback: function(response){ alert("Payment successful! Ref: "+response.reference); },
-    onClose: function(){ alert("Transaction cancelled"); }
-  });
-
-  handler.openIframe();
-}
+});
 </script>
 
 </body>
