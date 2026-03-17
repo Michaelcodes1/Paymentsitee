@@ -2,25 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Counc3 Escrow Fullscreen</title>
+<title>Counc3 Escrow Fullscreen Big</title>
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
-}
-
-html, body {
-  height: 100%;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+html, body { height: 100%; }
 
 body {
-  background: linear-gradient(135deg, #0f172a, #020617);
+  background: linear-gradient(135deg,#0f172a,#020617);
   color: #e2e8f0;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -28,7 +19,7 @@ body {
 .container {
   width: 100%;
   height: 100%;
-  padding: 20px;
+  padding: 25px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -36,74 +27,71 @@ body {
 
 h1 {
   text-align: center;
-  font-size: 28px;
-  margin-bottom: 10px;
+  font-size: 36px; /* BIG */
+  margin-bottom: 15px;
 }
 
 .subtitle {
   text-align: center;
-  font-size: 16px;
+  font-size: 20px; /* BIG */
   color: #94a3b8;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
-.input-group {
-  margin-bottom: 16px;
-}
+.input-group { margin-bottom: 20px; }
 
 input {
   width: 100%;
-  padding: 18px;
-  border-radius: 12px;
+  padding: 22px; /* BIG for thumbs */
+  border-radius: 16px;
   border: none;
   outline: none;
   background: #020617;
   color: #e2e8f0;
-  font-size: 18px;
+  font-size: 20px; /* BIG */
 }
 
 .summary {
-  margin-top: 20px;
-  padding: 16px;
-  border-radius: 12px;
-  background: rgba(0,255,200,0.1);
-  font-size: 16px;
+  margin-top: 25px;
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(0,255,200,0.15);
+  font-size: 20px; /* BIG */
   font-weight: bold;
   text-align: center;
 }
 
 button {
-  margin-top: 20px;
+  margin-top: 25px;
   width: 100%;
-  padding: 20px;
-  font-size: 18px;
+  padding: 24px; /* BIG button */
+  font-size: 22px; /* BIG */
   font-weight: bold;
   border: none;
-  border-radius: 16px;
-  background: linear-gradient(90deg, #22c55e, #00ffc8);
+  border-radius: 20px;
+  background: linear-gradient(90deg,#22c55e,#00ffc8);
   color: #020617;
   cursor: pointer;
   transition: 0.2s;
 }
 
-button:hover {
-  transform: scale(1.02);
-}
+button:hover { transform: scale(1.02); }
 
 .footer {
   text-align: center;
-  margin-top: 20px;
-  font-size: 14px;
+  margin-top: 25px;
+  font-size: 16px; /* BIG */
   color: #64748b;
 }
 
-/* Small screens tweak */
+/* Small phones adjustment */
 @media (max-width: 360px){
-  input { padding: 16px; font-size: 16px; }
-  button { padding: 18px; font-size: 16px; }
-  h1 { font-size: 24px; }
-  .subtitle { font-size: 14px; }
-  .summary { font-size: 14px; padding: 14px; }
+  input { padding: 20px; font-size: 18px; }
+  button { padding: 22px; font-size: 20px; }
+  h1 { font-size: 32px; }
+  .subtitle { font-size: 18px; }
+  .summary { font-size: 18px; padding: 18px; }
+  .footer { font-size: 14px; }
 }
 </style>
 </head>
@@ -178,4 +166,4 @@ document.getElementById("payButton").addEventListener("click", function(){
 </script>
 
 </body>
-</html>
+  </html>
