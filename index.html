@@ -2,36 +2,44 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Payment Dashboard</title>
+<title>Counc3 Escrow</title>
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
-
-  <style>
-body {
-  background: linear-gradient(135deg, #0f172a, #020617);
-  color: #e2e8f0;
+<style>
+/* ===== RESET & FONT ===== */
+* {
   margin: 0;
   padding: 0;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  box-sizing: border-box;
   font-family: 'Segoe UI', sans-serif;
 }
 
+/* ===== BODY ===== */
+body {
+  background: linear-gradient(135deg, #0f172a, #020617);
+  color: #e2e8f0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* vertical centering */
+  padding: 10px;
+}
+
+/* ===== CONTAINER ===== */
 .container {
-  width: 95%;          /* almost full width */
-  max-width: 400px;    /* comfortable max width */
+  width: 95%;
+  max-width: 400px;
   padding: 25px;
-  margin-top: 20px;
   border-radius: 25px;
   background: rgba(30, 41, 59, 0.85);
   backdrop-filter: blur(12px);
-  box-shadow: 0 0 40px rgba(0, 255, 200, 0.15);
+  box-shadow: 0 0 50px rgba(0, 255, 200, 0.2);
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
+/* ===== HEADINGS ===== */
 h1 {
   text-align: center;
   font-size: 24px;
@@ -45,6 +53,7 @@ h1 {
   margin-bottom: 20px;
 }
 
+/* ===== INPUTS ===== */
 .input-group {
   margin-bottom: 16px;
 }
@@ -60,6 +69,7 @@ input {
   font-size: 16px;
 }
 
+/* ===== DEAL SUMMARY ===== */
 .summary {
   margin-top: 18px;
   padding: 16px;
@@ -67,10 +77,10 @@ input {
   background: rgba(0, 255, 200, 0.1);
   font-size: 14px;
   font-weight: bold;
-  position: sticky;
-  top: 10px;
+  text-align: center;
 }
 
+/* ===== BUTTON ===== */
 button {
   margin-top: 20px;
   width: 100%;
@@ -89,6 +99,7 @@ button:hover {
   transform: scale(1.03);
 }
 
+/* ===== FOOTER ===== */
 .footer {
   text-align: center;
   margin-top: 20px;
@@ -96,7 +107,7 @@ button:hover {
   color: #64748b;
 }
 
-/* Responsive tweaks for very small screens */
+/* ===== VERY SMALL SCREENS ===== */
 @media (max-width: 360px) {
   input { padding: 14px; font-size: 15px; }
   button { padding: 16px; font-size: 15px; }
@@ -104,12 +115,77 @@ button:hover {
   .subtitle { font-size: 13px; }
   .summary { font-size: 13px; padding: 14px; }
 }
-  
 </style>
 </head>
 
 <body>
 
+<div class="container">
+  <h1>Counc3 Escrow</h1>
+  <p class="subtitle">Secure Middleman Transactions</p>
+
+  <div class="input-group"><input type="text" id="buyer" placeholder="Buyer Name"></div>
+  <div class="input-group"><input type="text" id="seller" placeholder="Seller Name"></div>
+  <div class="input-group"><input type="number" id="amount" placeholder="Amount (₦)"></div>
+  <div class="input-group"><input type="email" id="email" placeholder="Buyer Email"></div>
+
+  <div class="summary" id="summary">No deal preview yet</div>
+
+  <button onclick="notifyAndPay()">Secure Payment</button>
+
+  <div class="footer">Funds are held securely until release</div>
+</div>
+
+<script>
+/* ===== LIVE SUMMARY ===== */
+const inputs = document.querySelectorAll("input");
+inputs.forEach(input => input.addEventListener("input", updateSummary));
+
+function updateSummary(){
+  let buyer = document.getElementById("buyer").value || "-";
+  let seller = document.getElementById("seller").value || "-";
+  let amount = document.getElementById("amount").value || "0";
+  document.getElementById("summary").innerHTML = `<b>Deal Summary</b><br>Buyer: ${buyer}<br>Seller: ${seller}<br>Amount: ₦${amount}`;
+}
+
+/* ===== IFTTT GMAIL NOTIFICATION ===== */
+const IFTTT_WEBHOOK_URL = "https://maker.ifttt.com/trigger/escrow_click/with/key/YOUR_IFTTT_KEY";
+
+/* ===== PAYSTACK SETUP ===== */
+const PAYSTACK_PUBLIC_KEY = "YOUR_PAYSTACK_PUBLIC_KEY";
+
+function notifyAndPay(){
+  // 1️⃣ Send Gmail notification via IFTTT
+  fetch(IFTTT_WEBHOOK_URL, { method:"POST" })
+    .then(()=>console.log("Gmail notification sent"))
+    .catch(()=>console.log("Error sending notification"));
+
+  // 2️⃣ Launch Paystack payment
+  let amount = document.getElementById("amount").value * 100;
+  let email = document.getElementById("email").value;
+  if(!email || amount <= 0){ alert("Fill all fields correctly"); return; }
+
+  let handler = PaystackPop.setup({
+    key: PAYSTACK_PUBLIC_KEY,
+    email: email,
+    amount: amount,
+    currency: "NGN",
+    metadata:{
+      custom_fields:[
+        { display_name:"Buyer", value: document.getElementById("buyer").value },
+        { display_name:"Seller", value: document.getElementById("seller").value }
+      ]
+    },
+    callback: function(response){ alert("Payment successful! Ref: "+response.reference); },
+    onClose: function(){ alert("Transaction cancelled"); }
+  });
+
+  handler.openIframe();
+}
+</script>
+
+</body>
+</html>
 <div class="container">
   <h1>Payment Dashboard</h1>
   <p class="subtitle">Secure Transactions</p>
