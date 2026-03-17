@@ -2,107 +2,116 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Payment Dashboard</title>
+<title>Counc3 Escrow App</title>
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <style>
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI', sans-serif;
 }
 html, body {
-  height: 100%;
-  width: 100%;
-}
-body {
+  height:100%;
+  width:100%;
   background: linear-gradient(135deg,#0f172a,#020617);
-  color: #e2e8f0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  color:#e2e8f0;
+  display:flex;
+  flex-direction:column;
+}
+.header {
+  position: sticky;
+  top:0;
+  padding:20px;
+  background: rgba(15,23,42,0.95);
+  text-align:center;
+  z-index:10;
+  border-bottom:1px solid rgba(0,255,200,0.1);
+}
+.header h1 {
+  font-size:40px;
+}
+.header p {
+  font-size:20px;
+  color:#94a3b8;
+  margin-top:5px;
 }
 .container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around; /* spread inputs, summary, button */
-  padding: 20px;
+  flex:1;
+  overflow-y:auto;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
 }
-h1 {
-  font-size: 48px; /* HUGE heading */
-  text-align: center;
-}
-.subtitle {
-  font-size: 24px;
-  text-align: center;
-  color: #94a3b8;
-}
-.input-group {
-  margin-bottom: 20px;
+.card {
+  background: rgba(30,41,59,0.85);
+  border-radius:20px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  box-shadow:0 4px 20px rgba(0,255,200,0.2);
 }
 input {
-  width: 100%;
-  padding: 28px;
-  font-size: 28px; /* BIG input text */
-  border-radius: 20px;
-  border: none;
-  outline: none;
-  background: #020617;
-  color: #e2e8f0;
+  padding:22px;
+  font-size:24px;
+  border-radius:16px;
+  border:none;
+  outline:none;
+  background:#020617;
+  color:#e2e8f0;
 }
 .summary {
-  padding: 24px;
-  border-radius: 20px;
+  font-size:24px;
+  font-weight:bold;
+  padding:20px;
+  border-radius:16px;
   background: rgba(0,255,200,0.15);
-  font-size: 28px; /* BIG summary */
-  text-align: center;
-  font-weight: bold;
+  text-align:center;
 }
 button {
-  width: 100%;
-  padding: 32px;
-  font-size: 32px;
-  font-weight: bold;
-  border: none;
-  border-radius: 24px;
+  padding:28px;
+  font-size:28px;
+  font-weight:bold;
+  border:none;
+  border-radius:20px;
   background: linear-gradient(90deg,#22c55e,#00ffc8);
-  color: #020617;
-  cursor: pointer;
-  transition: 0.2s;
+  color:#020617;
+  cursor:pointer;
+  transition:0.2s;
 }
-button:hover {
-  transform: scale(1.02);
-}
+button:hover {transform:scale(1.02);}
 .footer {
-  font-size: 18px;
-  text-align: center;
-  color: #64748b;
-  margin-top: 10px;
+  text-align:center;
+  font-size:16px;
+  color:#64748b;
+  margin-top:10px;
 }
-/* Small phone adjustments */
-@media (max-width: 360px){
-  h1 { font-size: 40px; }
-  .subtitle { font-size: 20px; }
-  input { padding: 24px; font-size: 24px; }
-  .summary { font-size: 24px; padding: 20px; }
-  button { padding: 28px; font-size: 28px; }
-  .footer { font-size: 16px; }
+@media(max-width:360px){
+  .header h1{font-size:36px;}
+  .header p{font-size:18px;}
+  input{font-size:20px; padding:18px;}
+  .summary{font-size:20px; padding:18px;}
+  button{font-size:24px; padding:24px;}
+  .footer{font-size:14px;}
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Payment Dashboard</h1>
-  <p class="subtitle">Secure Transactions</p>
+<div class="header">
+  <h1>Counc3 Escrow</h1>
+  <p>Secure Middleman Transactions</p>
+</div>
 
-  <div class="input-group"><input type="text" id="buyer" placeholder="Buyer Name"></div>
-  <div class="input-group"><input type="text" id="seller" placeholder="Seller Name"></div>
-  <div class="input-group"><input type="number" id="amount" placeholder="Amount (₦)"></div>
-  <div class="input-group"><input type="email" id="email" placeholder="Buyer Email"></div>
+<div class="container">
+  <div class="card">
+    <input type="text" id="buyer" placeholder="Buyer Name">
+    <input type="text" id="seller" placeholder="Seller Name">
+    <input type="number" id="amount" placeholder="Amount (₦)">
+    <input type="email" id="email" placeholder="Buyer Email">
+  </div>
 
   <div class="summary" id="summary">No deal preview yet</div>
 
@@ -113,9 +122,9 @@ button:hover {
 
 <script>
 const inputs = document.querySelectorAll("input");
-inputs.forEach(input => input.addEventListener("input", updateSummary));
+inputs.forEach(input => input.addEventListener("input",updateSummary));
 
-function updateSummary() {
+function updateSummary(){
   const buyer = document.getElementById("buyer").value || "-";
   const seller = document.getElementById("seller").value || "-";
   const amount = document.getElementById("amount").value || "0";
@@ -126,12 +135,12 @@ function updateSummary() {
 const PAYSTACK_PUBLIC_KEY = "pk_test_1b7b7d62f93e88e631734634a7990c26e5ae755e";
 let paystackOpen = false;
 
-document.getElementById("payButton").addEventListener("click", function(){
+document.getElementById("payButton").addEventListener("click",function(){
   if(paystackOpen) return;
   const amount = document.getElementById("amount").value * 100;
   const email = document.getElementById("email").value;
 
-  if(!email || amount <= 0){
+  if(!email || amount<=0){
     alert("Fill all fields correctly");
     return;
   }
@@ -142,20 +151,20 @@ document.getElementById("payButton").addEventListener("click", function(){
     key: PAYSTACK_PUBLIC_KEY,
     email: email,
     amount: amount,
-    currency: "NGN",
-    metadata: {
-      custom_fields: [
-        { display_name: "Buyer", value: document.getElementById("buyer").value },
-        { display_name: "Seller", value: document.getElementById("seller").value }
+    currency:"NGN",
+    metadata:{
+      custom_fields:[
+        {display_name:"Buyer", value:document.getElementById("buyer").value},
+        {display_name:"Seller", value:document.getElementById("seller").value}
       ]
     },
-    callback: function(response){
-      alert("Payment successful! Ref: " + response.reference);
-      paystackOpen = false;
+    callback:function(response){
+      alert("Payment successful! Ref: "+response.reference);
+      paystackOpen=false;
     },
-    onClose: function(){
+    onClose:function(){
       alert("Transaction cancelled");
-      paystackOpen = false;
+      paystackOpen=false;
     }
   });
 
